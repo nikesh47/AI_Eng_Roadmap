@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Engineer Track 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-logo">AI <span>ENGINEER</span> TRACK <span>2026</span></div>
+    <div class="hdr-right">
+      <div class="badge badge-phase" id="hdr-phase">Phase 00</div>
+      <div class="badge badge-streak" id="hdr-streak">🔥 0 day streak</div>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav">
+    <div class="nav-tab active" onclick="switchTab('dashboard')">DASHBOARD</div>
+    <div class="nav-tab" onclick="switchTab('roadmap')">ROADMAP</div>
+    <div class="nav-tab" onclick="switchTab('planner')">PLANNER</div>
+    <div class="nav-tab" onclick="switchTab('stats')">STATS</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="pane active" id="pane-dashboard">
+    <div class="wrap">
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-lbl">CURRENT STREAK</div>
+          <div class="stat-val" id="d-streak">0</div>
+          <div class="stat-sub">days in a row</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">TOTAL HOURS</div>
+          <div class="stat-val" id="d-hours">0</div>
+          <div class="stat-sub">logged so far</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">STUDY DAYS</div>
+          <div class="stat-val" id="d-days">0</div>
+          <div class="stat-sub">total sessions</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">PHASES DONE</div>
+          <div class="stat-val" id="d-phases">0</div>
+          <div class="stat-sub">of 8 complete</div>
+        </div>
+      </div>
+
+      <div class="prog-card">
+        <div class="prog-head">
+          <span>OVERALL PROGRESS</span>
+          <span id="prog-pct">0%</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="phase-pills" id="phase-pills"></div>
+      </div>
+
+      <div class="today-card">
+        <div class="today-lbl">TODAY'S FOCUS</div>
+        <div class="today-body" id="today-focus">Loading...</div>
+      </div>
+
+      <div class="recent-header">RECENT SESSIONS</div>
+      <div class="log-list" id="dash-recent"></div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="pane" id="pane-roadmap">
+    <div class="wrap">
+      <div id="roadmap-list"></div>
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--b1);font-size:13px;color:var(--tx3);line-height:1.9;text-align:center;font-style:italic;">
+        The differentiator isn't talent or resources. It's whether you ship code consistently<br>while most people quit at month 3.
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANNER -->
+  <div class="pane" id="pane-planner">
+    <div class="wrap">
+      <div class="cal-top">
+        <div class="cal-month" id="cal-month-title">May 2026</div>
+        <div class="cal-nav">
+          <button class="cal-btn" onclick="calMove(-1)">← PREV</button>
+          <button class="cal-btn cal-today-btn" onclick="calToday()">TODAY</button>
+          <button class="cal-btn" onclick="calMove(1)">NEXT →</button>
+        </div>
+      </div>
+      <div class="cal-legend" id="cal-legend"></div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="log-section">
+        <div class="recent-header">RECENT SESSIONS</div>
+        <div class="log-list" id="planner-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="pane" id="pane-stats">
+    <div class="wrap">
+      <div class="stats-grid2">
+        <div class="stat">
+          <div class="stat-lbl">TOTAL HOURS</div>
+          <div class="stat-val" id="s-hrs">0</div>
+          <div class="stat-sub">hours logged</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">LONGEST STREAK</div>
+          <div class="stat-val" id="s-lstreak">0</div>
+          <div class="stat-sub">days consecutive</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">AVG HRS / DAY</div>
+          <div class="stat-val" id="s-avg">0</div>
+          <div class="stat-sub">on study days</div>
+        </div>
+        <div class="stat">
+          <div class="stat-lbl">THIS MONTH</div>
+          <div class="stat-val" id="s-month">0</div>
+          <div class="stat-sub">hours</div>
+        </div>
+      </div>
+
+      <div class="heat-wrap">
+        <div class="heat-title">STUDY ACTIVITY — LAST 52 WEEKS</div>
+        <div class="heatmap" id="heatmap"></div>
+        <div class="heat-labels">
+          <span>Less</span>
+          <div class="hcell" style="display:inline-block;"></div>
+          <div class="hcell" data-h="1" style="display:inline-block;"></div>
+          <div class="hcell" data-h="2" style="display:inline-block;"></div>
+          <div class="hcell" data-h="3" style="display:inline-block;"></div>
+          <span>More</span>
+        </div>
+      </div>
+
+      <div class="phase-bar-section">
+        <div class="slabel" style="margin-bottom:14px;">HOURS BY PHASE</div>
+        <div id="phase-bars"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG MODAL -->
+  <div class="overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title">LOG SESSION</div>
+      <div class="modal-date" id="modal-date-lbl"></div>
+
+      <div class="fg">
+        <label class="flbl">PHASE</label>
+        <select class="fsel" id="m-phase"></select>
+      </div>
+      <div class="fg">
+        <label class="flbl">HOURS STUDIED</label>
+        <input class="finp" type="number" id="m-hours" min="0.5" max="12" step="0.5" value="2" />
+      </div>
+      <div class="fg">
+        <label class="flbl">NOTES (optional)</label>
+        <textarea class="ftxt" id="m-notes" placeholder="What did you work on? What clicked? What was hard?"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ok" onclick="saveSession()">SAVE</button>
+        <button class="btn-cl" onclick="closeModal()">CANCEL</button>
+        <button class="btn-del" id="del-btn" onclick="deleteSession()" style="display:none">DELETE</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

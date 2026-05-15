@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Engineer Track 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg:   #080808;
+  --bg2:  #0d0d0d;
+  --bg3:  #111111;
+  --b1:   #1a1a1a;
+  --b2:   #242424;
+  --b3:   #303030;
+  --acc:  #f5a623;
+  --acc2: #c47d0e;
+  --acc3: #3a2000;
+  --tx:   #e0e0e0;
+  --tx2:  #888;
+  --tx3:  #444;
+  --tx4:  #2a2a2a;
+  --ok:   #4ade80;
+  --err:  #f87171;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+  --disp: 'Bebas Neue', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+a{color:var(--acc);text-decoration:none;}
+a:hover{text-decoration:underline;}
+button{font-family:var(--sans);}
+input,select,textarea{font-family:var(--sans);}
+
+/* ─── HEADER ─── */
+.hdr{
+  background:var(--bg2);
+  border-bottom:1px solid var(--b1);
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  gap:12px;
+}
+.hdr-logo{font-family:var(--disp);font-size:20px;letter-spacing:.08em;color:#fff;white-space:nowrap;}
+.hdr-logo span{color:var(--acc);}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+.badge{
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  padding:4px 10px;border-radius:2px;white-space:nowrap;
+}
+.badge-streak{background:var(--acc3);border:1px solid var(--acc2);color:var(--acc);}
+.badge-phase{background:var(--b1);border:1px solid var(--b2);color:var(--tx2);}
+
+/* ─── NAV ─── */
+.nav{background:var(--bg2);border-bottom:1px solid var(--b1);display:flex;padding:0 20px;overflow-x:auto;}
+.nav-tab{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  color:var(--tx3);padding:11px 14px;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .15s;
+  white-space:nowrap;user-select:none;
+}
+.nav-tab:hover{color:var(--tx2);}
+.nav-tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+
+/* ─── LAYOUT ─── */
+.pane{display:none;}
+.pane.active{display:block;}
+.wrap{max-width:780px;margin:0 auto;padding:24px 16px 80px;}
+
+/* ─── DASHBOARD ─── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:20px;}
+.stat{background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:14px 16px;}
+.stat-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--tx3);margin-bottom:6px;}
+.stat-val{font-family:var(--disp);font-size:36px;letter-spacing:.03em;color:var(--acc);line-height:1;}
+.stat-sub{font-size:11px;color:var(--tx2);margin-top:3px;}
+
+.prog-card{background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:16px;margin-bottom:16px;}
+.prog-head{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--tx3);margin-bottom:8px;}
+.prog-bar{background:var(--bg);border-radius:1px;height:3px;margin-bottom:14px;}
+.prog-fill{background:linear-gradient(90deg,var(--acc),var(--acc2));height:100%;border-radius:1px;transition:width .5s ease;}
+.phase-pills{display:flex;flex-wrap:wrap;gap:6px;}
+.pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:2px;border:1px solid var(--b1);color:var(--tx3);background:var(--bg);}
+.pill.done{border-color:var(--acc2);color:var(--acc);background:var(--acc3);}
+
+.today-card{background:linear-gradient(135deg,#0e0d00,var(--bg2));border:1px solid #2c2000;border-radius:3px;padding:16px;margin-bottom:16px;}
+.today-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--acc2);margin-bottom:6px;}
+.today-body{font-size:13px;color:#bbb;line-height:1.7;}
+.today-body strong{color:var(--acc);}
+
+.recent-header{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--tx3);margin-bottom:10px;}
+.log-list{display:flex;flex-direction:column;gap:6px;}
+.log-row{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:9px 12px;background:var(--bg2);border:1px solid var(--b1);
+  border-radius:2px;font-size:12px;
+}
+.log-d{font-family:var(--mono);font-size:10px;color:var(--tx2);flex-shrink:0;min-width:76px;}
+.log-pbadge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:2px;flex-shrink:0;}
+.log-h{font-family:var(--mono);font-size:10px;color:var(--acc);flex-shrink:0;}
+.log-n{font-size:12px;color:var(--tx2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.empty-state{font-size:13px;color:var(--tx3);padding:16px 0;font-style:italic;}
+
+/* ─── ROADMAP ─── */
+.phase-item{position:relative;margin-bottom:8px;}
+.phase-line{position:absolute;left:19px;top:44px;width:1px;bottom:-8px;background:var(--b1);z-index:0;transition:background .3s;}
+.phase-line.done{background:#2e1800;}
+.phase-card-r{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:3px;
+  padding:13px 13px 13px 46px;position:relative;z-index:1;cursor:pointer;transition:background .15s;
+}
+.phase-card-r:hover{background:var(--bg3);}
+.phase-card-r.open{background:var(--bg3);border-color:var(--b2);}
+.pdot{
+  position:absolute;left:13px;top:14px;width:14px;height:14px;
+  border-radius:50%;border:1.5px solid var(--b3);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;z-index:2;flex-shrink:0;
+}
+.pdot:hover{transform:scale(1.15);}
+.pdot.done{border-color:var(--acc);background:var(--acc);}
+.pnum{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--tx4);margin-bottom:2px;}
+.pnum.done{color:var(--acc2);}
+.ptitle{font-size:14px;font-weight:600;color:var(--tx);}
+.ptitle.done{color:var(--acc);}
+.pdur{font-family:var(--mono);font-size:9px;color:var(--tx3);margin-top:1px;}
+.pchev{position:absolute;right:13px;top:14px;color:var(--tx4);font-size:10px;transition:transform .2s;}
+.pchev.open{transform:rotate(180deg);}
+.pbody{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--b1);}
+.pbody.open{display:block;}
+.pintro{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:16px;}
+.slabel{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--tx4);margin-bottom:8px;}
+.res-list{margin-bottom:16px;}
+.res-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;line-height:1.5;align-items:flex-start;}
+.res-arr{color:var(--acc);flex-shrink:0;margin-top:1px;}
+.res-row span{color:#aaa;}
+.build-box{background:var(--bg);border:1px solid var(--b1);border-left:2px solid var(--acc);border-radius:2px;padding:10px 12px;margin-bottom:12px;}
+.build-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--acc);margin-bottom:4px;}
+.build-txt{font-size:13px;color:#aaa;line-height:1.6;}
+.tip-txt{font-size:12px;color:#444;line-height:1.65;font-style:italic;margin-bottom:14px;}
+.mark-btn{
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  padding:6px 14px;border-radius:2px;cursor:pointer;
+  border:1px solid var(--b2);color:var(--tx3);background:transparent;transition:all .15s;
+}
+.mark-btn:hover{border-color:var(--acc2);color:var(--acc);}
+.mark-btn.done{background:var(--acc3);border-color:var(--acc2);color:var(--acc);}
+
+/* ─── CALENDAR ─── */
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.cal-month{font-family:var(--disp);font-size:32px;letter-spacing:.06em;color:#fff;}
+.cal-nav{display:flex;gap:8px;}
+.cal-btn{
+  font-family:var(--mono);font-size:11px;color:var(--tx2);
+  background:var(--bg2);border:1px solid var(--b1);padding:6px 14px;
+  border-radius:2px;cursor:pointer;transition:all .15s;
+}
+.cal-btn:hover{border-color:var(--b2);color:var(--tx);}
+.cal-today-btn{color:var(--acc);border-color:var(--acc2);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:24px;}
+.cal-dlbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--tx3);text-align:center;padding:6px 0;}
+.cal-day{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:2px;
+  min-height:64px;padding:6px;cursor:pointer;transition:all .15s;position:relative;
+}
+.cal-day:hover{border-color:var(--b2);background:var(--bg3);}
+.cal-day.empty{background:transparent;border-color:transparent;cursor:default;pointer-events:none;}
+.cal-day.today{border-color:var(--acc)!important;}
+.cal-day.has-sess{background:#0e0c00;}
+.cal-day.future{opacity:.4;}
+.cal-dn{font-family:var(--mono);font-size:10px;color:var(--tx3);margin-bottom:3px;}
+.cal-day.today .cal-dn{color:var(--acc);}
+.cal-dot{width:7px;height:7px;border-radius:50%;margin-top:3px;}
+.cal-hrs{font-family:var(--mono);font-size:9px;color:var(--acc);margin-top:2px;}
+.cal-plbl{font-size:9px;color:#666;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.cal-legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3);}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+
+.log-section{background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:16px;}
+
+/* ─── STATS ─── */
+.heat-wrap{background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:16px;margin-bottom:16px;overflow-x:auto;}
+.heat-title{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--tx3);margin-bottom:12px;}
+.heatmap{display:grid;grid-template-rows:repeat(7,10px);grid-auto-flow:column;gap:2px;width:max-content;}
+.hcell{width:10px;height:10px;border-radius:1px;background:var(--b1);}
+.hcell[data-h="1"]{background:#2e1800;}
+.hcell[data-h="2"]{background:#7a4200;}
+.hcell[data-h="3"]{background:var(--acc);}
+.heat-labels{display:flex;gap:6px;margin-top:8px;font-family:var(--mono);font-size:9px;color:var(--tx3);}
+
+.stats-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px;}
+.phase-bar-section{background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:16px;}
+.pbar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.pbar-lbl{font-family:var(--mono);font-size:10px;color:var(--tx2);width:80px;flex-shrink:0;}
+.pbar-track{flex:1;background:var(--bg);border-radius:1px;height:6px;}
+.pbar-fill{height:100%;border-radius:1px;}
+.pbar-val{font-family:var(--mono);font-size:10px;color:var(--tx3);width:40px;text-align:right;flex-shrink:0;}
+
+/* ─── MODAL ─── */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
+  z-index:200;align-items:center;justify-content:center;padding:16px;
+}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--bg2);border:1px solid var(--b2);border-radius:4px;
+  padding:24px;width:100%;max-width:400px;
+}
+.modal-title{font-family:var(--disp);font-size:24px;letter-spacing:.06em;color:#fff;margin-bottom:2px;}
+.modal-date{font-family:var(--mono);font-size:10px;color:var(--tx2);letter-spacing:.1em;margin-bottom:20px;}
+.fg{margin-bottom:14px;}
+.flbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--tx3);margin-bottom:6px;display:block;}
+.fsel,.finp,.ftxt{
+  width:100%;background:var(--bg);border:1px solid var(--b2);border-radius:2px;
+  color:var(--tx);font-family:var(--sans);font-size:13px;padding:8px 10px;
+  outline:none;transition:border-color .15s;
+}
+.fsel:focus,.finp:focus,.ftxt:focus{border-color:var(--acc2);}
+.ftxt{min-height:68px;resize:vertical;line-height:1.5;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;align-items:center;}
+.btn-ok{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:8px 18px;
+  background:var(--acc);color:#080808;border:none;border-radius:2px;cursor:pointer;font-weight:700;transition:opacity .15s;
+}
+.btn-ok:hover{opacity:.85;}
+.btn-cl{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:8px 18px;
+  background:transparent;color:var(--tx2);border:1px solid var(--b2);border-radius:2px;cursor:pointer;transition:all .15s;
+}
+.btn-cl:hover{color:var(--tx);border-color:var(--b3);}
+.btn-del{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:8px 14px;
+  background:transparent;color:var(--err);border:1px solid #3a1515;border-radius:2px;cursor:pointer;margin-left:auto;transition:all .15s;
+}
+.btn-del:hover{background:#1a0808;}
+
+/* ─── MISC ─── */
+.section-gap{margin-bottom:16px;}
+.divider{border:none;border-top:1px solid var(--b1);margin:20px 0;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+@media(max-width:560px){
+  .cal-day{min-height:48px;padding:4px;}
+  .cal-hrs,.cal-plbl{display:none;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .hdr-logo{font-size:17px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">AI <span>ENGINEER</span> TRACK <span>2026</span></div>
+  <div class="hdr-right">
+    <div class="badge badge-phase" id="hdr-phase">Phase 00</div>
+    <div class="badge badge-streak" id="hdr-streak">🔥 0 day streak</div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav">
+  <div class="nav-tab active" onclick="switchTab('dashboard')">DASHBOARD</div>
+  <div class="nav-tab" onclick="switchTab('roadmap')">ROADMAP</div>
+  <div class="nav-tab" onclick="switchTab('planner')">PLANNER</div>
+  <div class="nav-tab" onclick="switchTab('stats')">STATS</div>
+</div>
+
+<!-- ════════════════ DASHBOARD ════════════════ -->
+<div class="pane active" id="pane-dashboard">
+  <div class="wrap">
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-lbl">CURRENT STREAK</div>
+        <div class="stat-val" id="d-streak">0</div>
+        <div class="stat-sub">days in a row</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">TOTAL HOURS</div>
+        <div class="stat-val" id="d-hours">0</div>
+        <div class="stat-sub">logged so far</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">STUDY DAYS</div>
+        <div class="stat-val" id="d-days">0</div>
+        <div class="stat-sub">total sessions</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">PHASES DONE</div>
+        <div class="stat-val" id="d-phases">0</div>
+        <div class="stat-sub">of 8 complete</div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="prog-card">
+      <div class="prog-head">
+        <span>OVERALL PROGRESS</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="phase-pills" id="phase-pills"></div>
+    </div>
+
+    <!-- Today -->
+    <div class="today-card">
+      <div class="today-lbl">TODAY'S FOCUS</div>
+      <div class="today-body" id="today-focus">Loading...</div>
+    </div>
+
+    <!-- Recent sessions -->
+    <div class="recent-header">RECENT SESSIONS</div>
+    <div class="log-list" id="dash-recent"></div>
+
+  </div>
+</div>
+
+<!-- ════════════════ ROADMAP ════════════════ -->
+<div class="pane" id="pane-roadmap">
+  <div class="wrap">
+    <div id="roadmap-list"></div>
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--b1);font-size:13px;color:var(--tx3);line-height:1.9;text-align:center;font-style:italic;">
+      The differentiator isn't talent or resources. It's whether you ship code consistently<br>while most people quit at month 3.
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ PLANNER ════════════════ -->
+<div class="pane" id="pane-planner">
+  <div class="wrap">
+
+    <div class="cal-top">
+      <div class="cal-month" id="cal-month-title">May 2026</div>
+      <div class="cal-nav">
+        <button class="cal-btn" onclick="calMove(-1)">← PREV</button>
+        <button class="cal-btn cal-today-btn" onclick="calToday()">TODAY</button>
+        <button class="cal-btn" onclick="calMove(1)">NEXT →</button>
+      </div>
+    </div>
+
+    <!-- Phase legend -->
+    <div class="cal-legend" id="cal-legend"></div>
+
+    <!-- Calendar grid -->
+    <div class="cal-grid" id="cal-grid"></div>
+
+    <!-- Recent logs -->
+    <div class="log-section">
+      <div class="recent-header">RECENT SESSIONS</div>
+      <div class="log-list" id="planner-log"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ STATS ════════════════ -->
+<div class="pane" id="pane-stats">
+  <div class="wrap">
+
+    <div class="stats-grid2">
+      <div class="stat">
+        <div class="stat-lbl">TOTAL HOURS</div>
+        <div class="stat-val" id="s-hrs">0</div>
+        <div class="stat-sub">hours logged</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">LONGEST STREAK</div>
+        <div class="stat-val" id="s-lstreak">0</div>
+        <div class="stat-sub">days consecutive</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">AVG HRS / DAY</div>
+        <div class="stat-val" id="s-avg">0</div>
+        <div class="stat-sub">on study days</div>
+      </div>
+      <div class="stat">
+        <div class="stat-lbl">THIS MONTH</div>
+        <div class="stat-val" id="s-month">0</div>
+        <div class="stat-sub">hours</div>
+      </div>
+    </div>
+
+    <!-- Heatmap -->
+    <div class="heat-wrap">
+      <div class="heat-title">STUDY ACTIVITY — LAST 52 WEEKS</div>
+      <div class="heatmap" id="heatmap"></div>
+      <div class="heat-labels">
+        <span>Less</span>
+        <div class="hcell" style="display:inline-block;"></div>
+        <div class="hcell" data-h="1" style="display:inline-block;"></div>
+        <div class="hcell" data-h="2" style="display:inline-block;"></div>
+        <div class="hcell" data-h="3" style="display:inline-block;"></div>
+        <span>More</span>
+      </div>
+    </div>
+
+    <!-- Phase breakdown -->
+    <div class="phase-bar-section">
+      <div class="slabel" style="margin-bottom:14px;">HOURS BY PHASE</div>
+      <div id="phase-bars"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════ LOG MODAL ════════════════ -->
+<div class="overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">LOG SESSION</div>
+    <div class="modal-date" id="modal-date-lbl"></div>
+
+    <div class="fg">
+      <label class="flbl">PHASE</label>
+      <select class="fsel" id="m-phase"></select>
+    </div>
+    <div class="fg">
+      <label class="flbl">HOURS STUDIED</label>
+      <input class="finp" type="number" id="m-hours" min="0.5" max="12" step="0.5" value="2" />
+    </div>
+    <div class="fg">
+      <label class="flbl">NOTES (optional)</label>
+      <textarea class="ftxt" id="m-notes" placeholder="What did you work on? What clicked? What was hard?"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-ok" onclick="saveSession()">SAVE</button>
+      <button class="btn-cl" onclick="closeModal()">CANCEL</button>
+      <button class="btn-del" id="del-btn" onclick="deleteSession()" style="display:none">DELETE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+
+const PHASES = [
+  {
+    id:0, num:"00", title:"Setup & Environment", duration:"1 week",
+    intro:"Get everything ready before writing a single line of ML code. Your free compute stack lives here.",
+    resources:[
+      {t:"Python 3.12+ · VS Code · Git — install all three", u:null},
+      {t:"Google Colab — free T4 GPU, ~12hr sessions", u:"https://colab.research.google.com"},
+      {t:"Kaggle Notebooks — free 30hrs GPU/week (often better than Colab)", u:"https://kaggle.com"},
+      {t:"HuggingFace — free account + free Spaces hosting for demos", u:"https://huggingface.co"},
+      {t:"Groq API — generous free tier for LLM calls", u:"https://console.groq.com"},
+      {t:"Google AI Studio (Gemini) — free LLM API", u:"https://aistudio.google.com"},
+      {t:"Modal.com — free compute credits on signup", u:"https://modal.com"},
+    ],
+    project:null,
+    tip:"Free GPU priority: Kaggle for long training runs, Colab for quick experiments. Lightning AI and Modal also have free tiers."
+  },
+  {
+    id:1, num:"01", title:"Python Fluency", duration:"4–6 weeks",
+    intro:"Everything else collapses without solid Python. Don't rush this phase — it's load-bearing.",
+    resources:[
+      {t:"Automate the Boring Stuff with Python — full book free online", u:"https://automatetheboringstuff.com"},
+      {t:"Harvard CS50P — Introduction to Programming with Python (free edX + YouTube)", u:"https://cs50.harvard.edu/python"},
+      {t:"Corey Schafer Python Tutorials — YouTube", u:"https://youtube.com/@coreyms"},
+      {t:"NumPy Quickstart Guide — official docs, free", u:"https://numpy.org/doc/stable/user/quickstart.html"},
+      {t:"Pandas 10 Minutes to Pandas — official docs, free", u:"https://pandas.pydata.org/docs/user_guide/10min.html"},
+      {t:"Real Python (free articles) — bite-sized Python deep dives", u:"https://realpython.com"},
+    ],
+    project:"Build a web scraper → clean data with Pandas → visualize with Matplotlib. Push to GitHub with a proper README.",
+    tip:"You're ready to advance when you can teach list comprehensions, classes, and decorators to someone else from memory."
+  },
+  {
+    id:2, num:"02", title:"Math Foundations", duration:"4–6 weeks (parallel to Phase 01 OK)",
+    intro:"You need intuition, not proofs. Don't try to become a mathematician — understand the shapes.",
+    resources:[
+      {t:"3Blue1Brown — Essence of Linear Algebra (YouTube, full series)", u:"https://youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab"},
+      {t:"3Blue1Brown — Essence of Calculus (YouTube, full series)", u:"https://youtube.com/playlist?list=PLZHQObOWTQDMsr9K-rj53DwVRMYO3t5Yr"},
+      {t:"StatQuest with Josh Starmer — Probability & Stats (YouTube)", u:"https://youtube.com/playlist?list=PLblh5JKOoLUK0FLuzwntyYI10UQFUhsY9"},
+      {t:"Khan Academy — Linear Algebra (free practice problems)", u:"https://khanacademy.org/math/linear-algebra"},
+      {t:"Mathematics for Machine Learning — free PDF at mml-book.github.io", u:"https://mml-book.github.io"},
+    ],
+    project:"Implement gradient descent from scratch in NumPy. Visualize the loss curve converging on a toy dataset.",
+    tip:"Focus on what matrix multiplication DOES geometrically. What a gradient IS physically. Don't memorize formulas — build the picture."
+  },
+  {
+    id:3, num:"03", title:"Classical Machine Learning", duration:"6–8 weeks",
+    intro:"The foundation every AI engineer assumes you already have. Do not skip or rush it.",
+    resources:[
+      {t:"Andrew Ng ML Specialization — audit FREE on Coursera (click 'Audit' to skip the paid cert)", u:"https://coursera.org/specializations/machine-learning-introduction"},
+      {t:"StatQuest — Complete ML Playlist (YouTube, excellent)", u:"https://youtube.com/playlist?list=PLblh5JKOoLUICTaGLRoHQDuF500j4GB9R"},
+      {t:"Caltech: Learning From Data — Yaser Abu-Mostafa (YouTube, free)", u:"https://youtube.com/playlist?list=PLD63A284B7615313A"},
+      {t:"Kaggle Learn — free hands-on micro-courses (ML, Pandas, feature engineering)", u:"https://kaggle.com/learn"},
+      {t:"scikit-learn User Guide — read it cover-to-cover like a textbook", u:"https://scikit-learn.org/stable/user_guide.html"},
+      {t:"An Intro to Statistical Learning — free PDF at statlearning.com", u:"https://statlearning.com"},
+    ],
+    project:"1. Kaggle Titanic (full end-to-end pipeline). 2. Kaggle House Prices (reach top 50%). 3. Classifier on data YOU collect — scrape, label, train.",
+    tip:"The Coursera certificate is worthless. The audit (free) gets all the content. No employer has ever cared about a Coursera certificate."
+  },
+  {
+    id:4, num:"04", title:"Deep Learning", duration:"8–10 weeks",
+    intro:"Build and train neural networks. PyTorch only — TensorFlow is fading fast in 2026.",
+    resources:[
+      {t:"fast.ai — Practical Deep Learning for Coders (free, top-down approach)", u:"https://course.fast.ai"},
+      {t:"MIT 6.S191 — Intro to Deep Learning (free on YouTube, updated every year)", u:"https://introtodeeplearning.com"},
+      {t:"Dive into Deep Learning — d2l.ai (free interactive book with PyTorch code)", u:"https://d2l.ai"},
+      {t:"NYU Deep Learning — Yann LeCun & Alfredo Canziani (free YouTube)", u:"https://youtube.com/playlist?list=PLLHTzKZzVU9eaEyErdV26ikyolxOsz6mq"},
+      {t:"PyTorch Official Tutorials — free", u:"https://pytorch.org/tutorials"},
+      {t:"Deep Learning Book — Goodfellow, Bengio, Courville (free at deeplearningbook.org)", u:"https://deeplearningbook.org"},
+    ],
+    project:"1. CNN on CIFAR-10 from scratch in PyTorch. 2. Fine-tune pretrained ResNet on a custom image dataset. 3. Deploy it free on HuggingFace Spaces.",
+    tip:"fast.ai is top-down (build first, understand later). MIT 6.S191 is bottom-up. Do fast.ai FIRST — shipping early keeps you motivated."
+  },
+  {
+    id:5, num:"05", title:"Transformers & LLMs", duration:"8–10 weeks",
+    intro:"The heart of modern AI. Karpathy's series is the best LLM education that exists at any price.",
+    resources:[
+      {t:"Karpathy — Neural Networks: Zero to Hero (ALL videos — code along, no shortcuts)", u:"https://karpathy.ai/zero-to-hero.html"},
+      {t:"Karpathy — Intro to Large Language Models (1hr overview)", u:"https://youtube.com/watch?v=zjkBMFhNj_g"},
+      {t:"Karpathy — Deep Dive into LLMs like ChatGPT", u:"https://youtube.com/watch?v=7xTGNNLPyMI"},
+      {t:"Karpathy — Let's reproduce GPT-2 (from scratch, in code)", u:"https://youtube.com/watch?v=l8pRSuU81PU"},
+      {t:"HuggingFace NLP Course — free, excellent", u:"https://huggingface.co/learn/nlp-course"},
+      {t:"The Illustrated Transformer — Jay Alammar (free blog post)", u:"https://jalammar.github.io/illustrated-transformer"},
+      {t:"'Attention Is All You Need' — original paper on arXiv (free)", u:"https://arxiv.org/abs/1706.03762"},
+      {t:"Stanford CS224N — NLP with Deep Learning (free YouTube)", u:"https://youtube.com/playlist?list=PLoROMvodv4rMFqRtEuo6SGjY4XbRIVx76"},
+    ],
+    project:"1. Train tiny GPT on Shakespeare (with Karpathy). 2. Fine-tune Llama 3.2 1B with LoRA on Kaggle GPU. 3. Reimplement the original Transformer paper from scratch.",
+    tip:"Watch Karpathy at 1x speed. Pause constantly. Code along — watching passively is almost completely useless for this material."
+  },
+  {
+    id:6, num:"06", title:"AI Engineering in Production", duration:"10–12 weeks",
+    intro:"What actually makes you hireable. Most bootcamps and courses skip this entirely. It is everything.",
+    resources:[
+      {t:"Anthropic Prompt Engineering Guide — free", u:"https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview"},
+      {t:"Anthropic — Building Effective Agents (essential free article)", u:"https://anthropic.com/research/building-effective-agents"},
+      {t:"Hamel Husain's blog — evals (hamel.dev — the best content on this topic, free)", u:"https://hamel.dev"},
+      {t:"Eugene Yan's blog — applied AI engineering (eugeneyan.com, free)", u:"https://eugeneyan.com"},
+      {t:"FastAPI Documentation — free", u:"https://fastapi.tiangolo.com"},
+      {t:"Qdrant Documentation — free vector database for RAG", u:"https://qdrant.tech/documentation"},
+      {t:"Unsloth — free library for fast LoRA/QLoRA fine-tuning", u:"https://unsloth.ai"},
+      {t:"LangChain Docs — use sparingly, build raw first", u:"https://docs.langchain.com"},
+      {t:"Papers With Code — track what's shipping (free)", u:"https://paperswithcode.com"},
+      {t:"OpenRouter — free tier access to many open models", u:"https://openrouter.ai"},
+    ],
+    project:"1. Production RAG app (own data, deployed, with real evals). 2. AI agent with tool use. 3. Fine-tune a small open model + write up the process. 4. One ambitious project you'd actually use.",
+    tip:"Use Groq + Google AI Studio free tiers throughout this phase. Only move to paid APIs when you need production-level throughput."
+  },
+  {
+    id:7, num:"07", title:"Portfolio & Job Search", duration:"Ongoing from month 6",
+    intro:"You now have 8–10 real projects. The GitHub portfolio matters infinitely more than any certificate.",
+    resources:[
+      {t:"GitHub — 5 pinned projects, each with video demo + deployed link + clean README", u:"https://github.com"},
+      {t:"Vercel — free personal portfolio site hosting", u:"https://vercel.com"},
+      {t:"HuggingFace Spaces — free hosting for ML demos", u:"https://huggingface.co/spaces"},
+      {t:"Chip Huyen's blog — career advice for ML (huyenchip.com, free)", u:"https://huyenchip.com/blog"},
+      {t:"Papers With Code — stay current on what's actually shipping", u:"https://paperswithcode.com"},
+      {t:"Designing ML Systems (free blog posts by Chip Huyen)", u:"https://huyenchip.com"},
+      {t:"Dive into Deep Learning — continue referencing", u:"https://d2l.ai"},
+    ],
+    project:"Apply to startups first — faster hiring, more learning. Nail take-home assignments — they matter more than technical interviews.",
+    tip:"Specialization paths: LLM app engineer (most common entry), MLOps/infra, computer vision, speech AI, robotics/RL. Pick one after Phase 06."
+  }
+];
+
+const PHASE_COLORS = ['#6366f1','#22c55e','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316'];
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAY_LABELS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+const TIPS = [
+  "Ship something today, even if it's small.",
+  "Code along — watching is not learning.",
+  "Push to GitHub every single day.",
+  "If you can't teach it, you don't know it yet.",
+  "Consistent reps compound. Show up.",
+  "Build something broken. Then fix it.",
+  "The goal is reps, not perfection.",
+  "One phase at a time. Don't skip ahead.",
+];
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+
+const LS = { cp:'aiet_cp', ss:'aiet_ss' };
+
+let completedPhases = new Set();
+let sessions = {}; // { 'YYYY-MM-DD': { phase, hours, notes } }
+
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let modalDate = null;
+
+function load() {
+  try {
+    const cp = localStorage.getItem(LS.cp);
+    if (cp) completedPhases = new Set(JSON.parse(cp));
+    const ss = localStorage.getItem(LS.ss);
+    if (ss) sessions = JSON.parse(ss);
+  } catch(e) {}
+}
+
+function save() {
+  try {
+    localStorage.setItem(LS.cp, JSON.stringify([...completedPhases]));
+    localStorage.setItem(LS.ss, JSON.stringify(sessions));
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+
+function toDateStr(d) {
+  return d.toISOString().slice(0,10);
+}
+
+function todayStr() {
+  return toDateStr(new Date());
+}
+
+function getStreak() {
+  let streak = 0;
+  let d = new Date();
+  // if today has no session, start checking from yesterday
+  if (!sessions[toDateStr(d)]) d.setDate(d.getDate()-1);
+  while (sessions[toDateStr(d)]) {
+    streak++;
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+
+function getLongestStreak() {
+  const dates = Object.keys(sessions).sort();
+  if (!dates.length) return 0;
+  let max=1, cur=1;
+  for (let i=1;i<dates.length;i++){
+    const prev = new Date(dates[i-1]);
+    const curr = new Date(dates[i]);
+    const diff = (curr-prev)/(1000*60*60*24);
+    if (diff===1) { cur++; max=Math.max(max,cur); }
+    else cur=1;
+  }
+  return max;
+}
+
+function getTotalHours() {
+  return Object.values(sessions).reduce((a,s)=>a+(parseFloat(s.hours)||0),0);
+}
+
+function getStudyDays() {
+  return Object.keys(sessions).length;
+}
+
+function getCurrentPhase() {
+  for (let i=PHASES.length-1;i>=0;i--) {
+    if (completedPhases.has(i)) return Math.min(i+1, PHASES.length-1);
+  }
+  return 0;
+}
+
+function getMonthHours(year, month) {
+  let total = 0;
+  Object.entries(sessions).forEach(([date,s])=>{
+    const d = new Date(date);
+    if (d.getFullYear()===year && d.getMonth()===month) total += parseFloat(s.hours)||0;
+  });
+  return total;
+}
+
+function getRecentSessions(n) {
+  return Object.entries(sessions)
+    .sort((a,b)=>b[0].localeCompare(a[0]))
+    .slice(0,n);
+}
+
+function formatDate(str) {
+  const d = new Date(str+'T00:00:00');
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function formatFullDate(str) {
+  const d = new Date(str+'T00:00:00');
+  return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+}
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
+
+function switchTab(t) {
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(n=>n.classList.remove('active'));
+  document.getElementById('pane-'+t).classList.add('active');
+  const tabs = ['dashboard','roadmap','planner','stats'];
+  document.querySelectorAll('.nav-tab')[tabs.indexOf(t)].classList.add('active');
+  if (t==='dashboard') renderDashboard();
+  if (t==='roadmap')   renderRoadmap();
+  if (t==='planner')   renderCalendar();
+  if (t==='stats')     renderStats();
+}
+
+// ══════════════════════════════════════════
+//  HEADER
+// ══════════════════════════════════════════
+
+function updateHeader() {
+  const streak = getStreak();
+  const cp = getCurrentPhase();
+  document.getElementById('hdr-streak').textContent = `🔥 ${streak} day streak`;
+  document.getElementById('hdr-phase').textContent = `Phase ${PHASES[cp].num} · ${PHASES[cp].title}`;
+}
+
+// ══════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════
+
+function renderDashboard() {
+  const streak = getStreak();
+  const hours  = getTotalHours();
+  const days   = getStudyDays();
+  const phases = completedPhases.size;
+
+  document.getElementById('d-streak').textContent = streak;
+  document.getElementById('d-hours').textContent  = hours % 1 === 0 ? hours : hours.toFixed(1);
+  document.getElementById('d-days').textContent   = days;
+  document.getElementById('d-phases').textContent = phases;
+
+  const pct = Math.round((phases / PHASES.length)*100);
+  document.getElementById('prog-pct').textContent  = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+
+  // Phase pills
+  const pills = document.getElementById('phase-pills');
+  pills.innerHTML = PHASES.map(p=>{
+    const done = completedPhases.has(p.id);
+    return `<div class="pill ${done?'done':''}">P${p.num} ${p.title.split(' ')[0]}</div>`;
+  }).join('');
+
+  // Today focus
+  const cp = getCurrentPhase();
+  const ph = PHASES[cp];
+  const tip = TIPS[new Date().getDate() % TIPS.length];
+  const todaySess = sessions[todayStr()];
+  let focusTxt = '';
+  if (todaySess) {
+    const pp = PHASES[todaySess.phase];
+    focusTxt = `You studied <strong>${todaySess.hours}h</strong> today on <strong>${pp.title}</strong>. ${todaySess.notes ? '"'+todaySess.notes+'"' : ''}<br><br><em>${tip}</em>`;
+  } else {
+    focusTxt = `Today's phase: <strong>${ph.title}</strong><br>${ph.intro}<br><br><em>${tip}</em>`;
+  }
+  document.getElementById('today-focus').innerHTML = focusTxt;
+
+  // Recent sessions
+  const recent = getRecentSessions(6);
+  const el = document.getElementById('dash-recent');
+  if (!recent.length) {
+    el.innerHTML = '<div class="empty-state">No sessions yet. Go to Planner to log your first study session.</div>';
+  } else {
+    el.innerHTML = recent.map(([date,s])=>logRowHTML(date,s)).join('');
+  }
+
+  updateHeader();
+}
+
+function logRowHTML(date, s) {
+  const ph = PHASES[s.phase];
+  const color = PHASE_COLORS[s.phase];
+  return `<div class="log-row">
+    <span class="log-d">${formatDate(date)}</span>
+    <span class="log-pbadge" style="background:${color}22;border:1px solid ${color}55;color:${color};">P${ph.num}</span>
+    <span class="log-h">${s.hours}h</span>
+    <span class="log-n">${s.notes||ph.title}</span>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+//  ROADMAP
+// ══════════════════════════════════════════
+
+function renderRoadmap() {
+  const el = document.getElementById('roadmap-list');
+  el.innerHTML = PHASES.map((p,i)=>{
+    const done = completedPhases.has(p.id);
+    const isLast = i === PHASES.length-1;
+    return `
+    <div class="phase-item">
+      ${!isLast?`<div class="phase-line ${done?'done':''}"></div>`:''}
+      <div class="phase-card-r" id="pc-${p.id}" onclick="togglePhaseCard(${p.id})">
+        <div class="pdot ${done?'done':''}" id="pd-${p.id}" onclick="event.stopPropagation();togglePhase(${p.id})" title="Mark complete">
+          ${done?'<svg width="7" height="7" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+        </div>
+        <div class="pnum ${done?'done':''}">PHASE ${p.num} · ${p.duration}</div>
+        <div class="ptitle ${done?'done':''}">${p.title}</div>
+        <div class="pchev" id="pchev-${p.id}">▼</div>
+
+        <div class="pbody" id="pb-${p.id}">
+          <div class="pintro">${p.intro}</div>
+
+          <div class="slabel">RESOURCES</div>
+          <div class="res-list">
+            ${p.resources.map(r=>`
+              <div class="res-row">
+                <span class="res-arr">→</span>
+                ${r.u ? `<a href="${r.u}" target="_blank" rel="noopener">${r.t}</a>` : `<span>${r.t}</span>`}
+              </div>
+            `).join('')}
+          </div>
+
+          ${p.project?`
+          <div class="build-box">
+            <div class="build-lbl">BUILD THIS</div>
+            <div class="build-txt">${p.project}</div>
+          </div>`:''}
+
+          ${p.tip?`<div class="tip-txt">⚡ ${p.tip}</div>`:''}
+
+          <button class="mark-btn ${done?'done':''}" onclick="event.stopPropagation();togglePhase(${p.id})">
+            ${done?'✓ PHASE COMPLETE':'MARK COMPLETE'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePhaseCard(id) {
+  const body  = document.getElementById('pb-'+id);
+  const card  = document.getElementById('pc-'+id);
+  const chev  = document.getElementById('pchev-'+id);
+  const open  = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  card.classList.toggle('open', !open);
+  chev.classList.toggle('open', !open);
+}
+
+function togglePhase(id) {
+  if (completedPhases.has(id)) completedPhases.delete(id);
+  else completedPhases.add(id);
+  save();
+  renderRoadmap();
+  updateHeader();
+}
+
+// ══════════════════════════════════════════
+//  CALENDAR
+// ══════════════════════════════════════════
+
+function renderCalendar() {
+  const titleEl = document.getElementById('cal-month-title');
+  titleEl.textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+
+  // Legend
+  const leg = document.getElementById('cal-legend');
+  leg.innerHTML = PHASES.map(p=>`
+    <div class="leg-item">
+      <div class="leg-dot" style="background:${PHASE_COLORS[p.id]}"></div>
+      <span>P${p.num} ${p.title.split(' ')[0]}</span>
+    </div>
+  `).join('');
+
+  // Grid
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = DAY_LABELS.map(d=>`<div class="cal-dlbl">${d}</div>`).join('');
+
+  const today = todayStr();
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+
+  // Empty cells for offset
+  for (let i=0;i<firstDay;i++) grid.innerHTML += '<div class="cal-day empty"></div>';
+
+  for (let d=1;d<=daysInMonth;d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const sess = sessions[dateStr];
+    const isToday = dateStr === today;
+    const isFuture = dateStr > today;
+    let inner = `<div class="cal-dn">${d}</div>`;
+    if (sess) {
+      const color = PHASE_COLORS[sess.phase];
+      inner += `<div class="cal-dot" style="background:${color}"></div>`;
+      inner += `<div class="cal-hrs">${sess.hours}h</div>`;
+      inner += `<div class="cal-plbl">${PHASES[sess.phase].title}</div>`;
+    }
+    grid.innerHTML += `<div class="cal-day ${isToday?'today':''} ${sess?'has-sess':''} ${isFuture?'future':''}" onclick="${isFuture?'':''}" data-date="${dateStr}" onclick="openModal('${dateStr}')">${inner}</div>`;
+  }
+
+  // Planner log (recent 10)
+  const logEl = document.getElementById('planner-log');
+  const recent = getRecentSessions(10);
+  if (!recent.length) {
+    logEl.innerHTML = '<div class="empty-state">Click any day to log a study session.</div>';
+  } else {
+    logEl.innerHTML = recent.map(([date,s])=>logRowHTML(date,s)).join('');
+  }
+}
+
+function calMove(dir) {
+  calMonth += dir;
+  if (calMonth<0) { calMonth=11; calYear--; }
+  if (calMonth>11) { calMonth=0; calYear++; }
+  renderCalendar();
+}
+
+function calToday() {
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCalendar();
+}
+
+// ══════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════
+
+function openModal(dateStr) {
+  modalDate = dateStr;
+  document.getElementById('modal-date-lbl').textContent = formatFullDate(dateStr);
+
+  // Populate phase select
+  const sel = document.getElementById('m-phase');
+  sel.innerHTML = PHASES.map(p=>`<option value="${p.id}">Phase ${p.num} — ${p.title}</option>`).join('');
+
+  const existing = sessions[dateStr];
+  if (existing) {
+    sel.value = existing.phase;
+    document.getElementById('m-hours').value = existing.hours;
+    document.getElementById('m-notes').value = existing.notes||'';
+    document.getElementById('del-btn').style.display = 'block';
+  } else {
+    sel.value = getCurrentPhase();
+    document.getElementById('m-hours').value = 2;
+    document.getElementById('m-notes').value = '';
+    document.getElementById('del-btn').style.display = 'none';
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+  modalDate = null;
+}
+
+function saveSession() {
+  if (!modalDate) return;
+  sessions[modalDate] = {
+    phase: parseInt(document.getElementById('m-phase').value),
+    hours: parseFloat(document.getElementById('m-hours').value)||1,
+    notes: document.getElementById('m-notes').value.trim()
+  };
+  save();
+  document.getElementById('modal-overlay').classList.remove('open');
+  modalDate = null;
+  renderCalendar();
+  renderDashboard();
+  if (document.getElementById('pane-stats').classList.contains('active')) renderStats();
+}
+
+function deleteSession() {
+  if (!modalDate) return;
+  delete sessions[modalDate];
+  save();
+  document.getElementById('modal-overlay').classList.remove('open');
+  modalDate = null;
+  renderCalendar();
+  renderDashboard();
+}
+
+// ══════════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════════
+
+function renderStats() {
+  const hours   = getTotalHours();
+  const days    = getStudyDays();
+  const longest = getLongestStreak();
+  const avg     = days ? (hours/days).toFixed(1) : 0;
+  const mHours  = getMonthHours(new Date().getFullYear(), new Date().getMonth());
+
+  document.getElementById('s-hrs').textContent     = hours % 1 === 0 ? hours : hours.toFixed(1);
+  document.getElementById('s-lstreak').textContent = longest;
+  document.getElementById('s-avg').textContent     = avg;
+  document.getElementById('s-month').textContent   = mHours % 1 === 0 ? mHours : mHours.toFixed(1);
+
+  // Heatmap — last 364 days (52 weeks)
+  const hm = document.getElementById('heatmap');
+  hm.innerHTML = '';
+  const today = new Date();
+  // Start from 363 days ago, aligned to Sunday
+  const startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - 363);
+  // Rewind to Sunday
+  while (startDate.getDay() !== 0) startDate.setDate(startDate.getDate()-1);
+
+  const cur = new Date(startDate);
+  while (cur <= today) {
+    const ds = toDateStr(cur);
+    const sess = sessions[ds];
+    let level = 0;
+    if (sess) {
+      const h = parseFloat(sess.hours)||0;
+      level = h < 1.5 ? 1 : h < 3 ? 2 : 3;
+    }
+    const cell = document.createElement('div');
+    cell.className = 'hcell';
+    if (level) cell.setAttribute('data-h', level);
+    cell.title = ds + (sess ? ` · ${sess.hours}h` : '');
+    hm.appendChild(cell);
+    cur.setDate(cur.getDate()+1);
+  }
+
+  // Phase bars
+  const phaseHours = PHASES.map(p=>({p, h:0}));
+  Object.values(sessions).forEach(s=>{
+    if (phaseHours[s.phase]) phaseHours[s.phase].h += parseFloat(s.hours)||0;
+  });
+  const maxH = Math.max(...phaseHours.map(x=>x.h), 1);
+
+  document.getElementById('phase-bars').innerHTML = phaseHours.map(({p,h})=>`
+    <div class="pbar-row">
+      <div class="pbar-lbl">P${p.num} ${p.title.split(' ')[0]}</div>
+      <div class="pbar-track">
+        <div class="pbar-fill" style="width:${(h/maxH)*100}%;background:${PHASE_COLORS[p.id]};"></div>
+      </div>
+      <div class="pbar-val">${h > 0 ? (h%1===0?h:h.toFixed(1))+'h' : '—'}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+
+load();
+renderDashboard();
+renderRoadmap();
+</script>
+</body>
+</html>
