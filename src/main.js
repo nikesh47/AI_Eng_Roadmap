@@ -1,11 +1,10 @@
 import './style.css';
 import { PHASES, PHASE_COLORS, MONTH_NAMES, DAY_LABELS, TIPS } from './data.js';
+import { supabase } from './supabase.js';
 
 // ══════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════
-
-const LS = { cp:'aiet_cp', ss:'aiet_ss' };
 
 let completedPhases = new Set();
 let sessions = {}; // { 'YYYY-MM-DD': { phase, hours, notes } }
@@ -13,22 +12,117 @@ let sessions = {}; // { 'YYYY-MM-DD': { phase, hours, notes } }
 let calYear  = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 let modalDate = null;
+let user = null;
 
-function load() {
-  try {
-    const cp = localStorage.getItem(LS.cp);
-    if (cp) completedPhases = new Set(JSON.parse(cp));
-    const ss = localStorage.getItem(LS.ss);
-    if (ss) sessions = JSON.parse(ss);
-  } catch(e) {}
+async function checkAuth() {
+  if (!supabase) {
+    document.getElementById('auth-error').textContent = 'Supabase is not configured. Add URL and Key to .env';
+    document.getElementById('auth-error').style.display = 'block';
+    return;
+  }
+  
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    user = session.user;
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('logout-btn').style.display = 'block';
+    await loadData();
+  } else {
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('logout-btn').style.display = 'none';
+  }
 }
 
-function save() {
-  try {
-    localStorage.setItem(LS.cp, JSON.stringify([...completedPhases]));
-    localStorage.setItem(LS.ss, JSON.stringify(sessions));
-  } catch(e) {}
+async function loadData() {
+  if (!user) return;
+  const { data, error } = await supabase
+    .from('user_progress')
+    .select('*')
+    .eq('user_id', user.id)
+    .single();
+    
+  if (data) {
+    completedPhases = new Set(data.completed_phases || []);
+    sessions = data.sessions || {};
+  } else {
+    completedPhases = new Set();
+    sessions = {};
+  }
+  
+  renderDashboard();
+  renderRoadmap();
+  renderCalendar();
+  if (document.getElementById('pane-stats').classList.contains('active')) renderStats();
 }
+
+async function save() {
+  if (!user) return;
+  const { error } = await supabase
+    .from('user_progress')
+    .upsert({
+      user_id: user.id,
+      completed_phases: Array.from(completedPhases),
+      sessions: sessions,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+    
+  if (error) console.error("Error saving data:", error);
+}
+
+// Auth Handlers
+window.handleLogin = async function() {
+  if (!supabase) return;
+  const email = document.getElementById('auth-email').value;
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  const loadEl = document.getElementById('auth-loading');
+  
+  errEl.style.display = 'none';
+  loadEl.style.display = 'block';
+  
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  loadEl.style.display = 'none';
+  
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+  } else {
+    await checkAuth();
+  }
+};
+
+window.handleSignup = async function() {
+  if (!supabase) return;
+  const email = document.getElementById('auth-email').value;
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  const loadEl = document.getElementById('auth-loading');
+  
+  errEl.style.display = 'none';
+  loadEl.style.display = 'block';
+  
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  loadEl.style.display = 'none';
+  
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+  } else {
+    errEl.textContent = "Signup successful! Please check your email or try logging in.";
+    errEl.style.color = "var(--ok)";
+    errEl.style.display = 'block';
+  }
+};
+
+window.logout = async function() {
+  if (!supabase) return;
+  await supabase.auth.signOut();
+  user = null;
+  completedPhases = new Set();
+  sessions = {};
+  await checkAuth();
+};
+
 
 // ══════════════════════════════════════════
 //  UTILS
@@ -458,7 +552,6 @@ function renderStats() {
 //  INIT
 // ══════════════════════════════════════════
 
-load();
-renderDashboard();
-renderRoadmap();
-renderCalendar();
+document.getElementById('logout-btn').addEventListener('click', window.logout);
+
+checkAuth();
